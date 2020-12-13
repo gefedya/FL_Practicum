@@ -49,9 +49,9 @@ namespace RegExp {
 
         for (size_t i = 1; i < current_node.size(); ++i) {
             //new_current_node[i] = current_node[i];
-            for (size_t j = 1; j <= i; ++j) {
-                if (current_node[j] == j && current_node[i % j] != UINT64_MAX) {
-                    new_current_node[i] = std::min(new_current_node[i], new_current_node[i % j] + current_node[j] * (i / j));
+            for (size_t j = 1; j < i; ++j) {
+                if (current_node[j] == j && new_current_node[i - j] != UINT64_MAX) {
+                    new_current_node[i] = std::min(new_current_node[i], new_current_node[i - j] + j);
                 }
             }
         }
