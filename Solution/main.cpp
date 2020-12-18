@@ -1,4 +1,7 @@
-// из языка L, содержащего префикс x^k.
+// Задача 8. По данному регулярному выражению в Польской записи над алфавитом {a,b,c,1,*,.,+}, 
+// символу x из множества {a, b, c} и неотрицательному целому k вывести минимальную длину слова
+// с суффиксом x^k в языке, задаваемым регулярным выражением.
+
 
 // Тесты:
 //
@@ -237,8 +240,8 @@ namespace RegExp {
             cout << answer << "\n";
         }
     };
-
 }
+
 
 namespace Testing {
     using RegExp::RegExp;
@@ -306,11 +309,17 @@ namespace Testing {
         auto res_5 = RegExpMinWordWithGivenPrefixRead(s_test_5, x_5, k_5);
         // Expected 6 
 
+        std::string s_test_6 = "11111c.....ab.+";
+        char x_6 = 'a';
+        size_t k_6 = 0;
+
+        auto res_6 = RegExpMinWordWithGivenPrefixRead(s_test_6, x_6, k_6);
+        // Expected 1
 
         assert(RegExpCorrectnessRead(s_test_1) && RegExpCorrectnessRead(s_test_2) && RegExpCorrectnessRead(s_test_3) &&
-               RegExpCorrectnessRead(s_test_4), RegExpCorrectnessRead(s_test_5));
+               RegExpCorrectnessRead(s_test_4) && RegExpCorrectnessRead(s_test_5) && RegExpCorrectnessRead(s_test_6));
 
-        assert(res_1 == UINT64_MAX && res_2 == 4 && res_3 == 2020 && res_4 == 15 && res_5 == 6);
+        assert(res_1 == UINT64_MAX && res_2 == 4 && res_3 == 2020 && res_4 == 15 && res_5 == 6 && res_6 == 1);
     }
 
     void DoTesting() {
