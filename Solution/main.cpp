@@ -73,8 +73,10 @@ namespace RegExp {
         new_current_node[0] = lhs_node[0] + rhs_node[0] ;
 
         for (size_t i = 1; i < rhs_node.size(); ++i) {
-            new_current_node[i] = rhs_node[i] != UINT64_MAX ? lhs_node[0] + rhs_node[i] : UINT64_MAX;
-            for (size_t j = 1; j <= i; ++j) {
+            if (rhs_node[i] != UINT64_MAX) {
+                new_current_node[i] = lhs_node[0] + rhs_node[i];
+            }
+            for (size_t j = 0; j < i; ++j) {
                 if (rhs_node[j] == j && lhs_node[i - j] != UINT64_MAX) {
                     new_current_node[i] = std::min(new_current_node[i], lhs_node[i - j] + j);
                 }
@@ -173,17 +175,16 @@ namespace RegExp {
                 } else if (IsOperand(i)) {
                     if (IsUnaryOperand(i)) {
                         min_word_length.top() = 0;
-                    } else if (IsBinaryOperand(i)) // + or .
-                    {
+                    } else {
                         size_t rhs_min_len = min_word_length.top();
                         min_word_length.pop();
                         size_t lhs_min_len = min_word_length.top();
                         min_word_length.pop();
 
                         if (i == '+') {
-                            min_word_length.push(std::min(rhs_min_len, lhs_min_len));
+                            min_word_length.push(std::min(lhs_min_len, rhs_min_len));
                         } else if (i == '.') {
-                            min_word_length.push(rhs_min_len + lhs_min_len);
+                            min_word_length.push(lhs_min_len + rhs_min_len);
                         }
                     }
                 }
@@ -192,19 +193,17 @@ namespace RegExp {
         }
 
         size_t FindMinWordWithGivenPrefix(char x, size_t k) const {
-            /*size_t min_word_length = FindMinWord();
             if (!k) {
+                size_t min_word_length = FindMinWord();
                 return min_word_length;
-            }*/
+            }
 
             stack<vector<size_t>> nodes;
-
             for (const char &i : regexp_) {
                 if (IsSymbol_abc(i) || IsSymbol_1(i)) {
                     vector<size_t> current_node(k + 1, UINT64_MAX); // x_0, x_1, ... , x_k
                     current_node[0] = IsSymbol_1(i) ? 0 : 1;
-
-                    if (k && i == x) {
+                    if (i == x) {
                         current_node[1] = 1;
                     }
                     nodes.push(current_node);
@@ -316,10 +315,55 @@ namespace Testing {
         auto res_6 = RegExpMinWordWithGivenPrefixRead(s_test_6, x_6, k_6);
         // Expected 1
 
-        assert(RegExpCorrectnessRead(s_test_1) && RegExpCorrectnessRead(s_test_2) && RegExpCorrectnessRead(s_test_3) &&
-               RegExpCorrectnessRead(s_test_4) && RegExpCorrectnessRead(s_test_5) && RegExpCorrectnessRead(s_test_6));
+        std::string s_test_7 = "cccccccc.......ccccc....+*";
+        char x_7 = 'c';
+        size_t k_7 = 9;
 
-        assert(res_1 == UINT64_MAX && res_2 == 4 && res_3 == 2020 && res_4 == 15 && res_5 == 6 && res_6 == 1);
+        auto res_7 = RegExpMinWordWithGivenPrefixRead(s_test_7, x_7, k_7);
+        // Expected 10
+
+        std::string s_test_8 = "cccccccc.......ccccc....+*";
+        char x_8 = 'c';
+        size_t k_8 = 28;
+
+        auto res_8 = RegExpMinWordWithGivenPrefixRead(s_test_8, x_8, k_8);
+        // Expected 28
+
+        std::string s_test_9 = "cccccccc.......ccccc....+*";
+        char x_9 = 'c';
+        size_t k_9 = 36;
+
+        auto res_9 = RegExpMinWordWithGivenPrefixRead(s_test_9, x_9, k_9);
+        // Expected 36
+
+        std::string s_test_10 = "1c+1.*b.c*.";
+        char x_10 = 'b';
+        size_t k_10 = 1;
+
+        auto res_10 = RegExpMinWordWithGivenPrefixRead(s_test_10, x_10, k_10);
+        // Expected 1
+
+        std::string s_test_11 = "aaa..bbb..+*a.";
+        char x_11 = 'a';
+        size_t k_11 = 5;
+
+        auto res_11 = RegExpMinWordWithGivenPrefixRead(s_test_11, x_11, k_11);
+        // Expected 7
+
+        std::string s_test_12 = "aa.bb.+*c.ac+*.";
+        char x_12 = 'b';
+        size_t k_12 = 1;
+
+        auto res_12 = RegExpMinWordWithGivenPrefixRead(s_test_12, x_12, k_12);
+        // Expected UINT_64_MAX
+
+        assert(RegExpCorrectnessRead(s_test_1) && RegExpCorrectnessRead(s_test_2) && RegExpCorrectnessRead(s_test_3) &&
+               RegExpCorrectnessRead(s_test_4) && RegExpCorrectnessRead(s_test_5) && RegExpCorrectnessRead(s_test_6) &&
+               RegExpCorrectnessRead(s_test_7) && RegExpCorrectnessRead(s_test_8) && RegExpCorrectnessRead(s_test_9) &&
+               RegExpCorrectnessRead(s_test_10) && RegExpCorrectnessRead(s_test_11) && RegExpCorrectnessRead(s_test_12));
+
+        assert(res_1 == UINT64_MAX && res_2 == 4 && res_3 == 2020 && res_4 == 15 && res_5 == 6 && res_6 == 1 && res_7 == 10
+                && res_8 == 28 && res_9 == 36 && res_10 == 1 && res_11 == 7 && res_12 == UINT64_MAX);
     }
 
     void DoTesting() {
