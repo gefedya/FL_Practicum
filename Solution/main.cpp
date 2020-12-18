@@ -1,4 +1,3 @@
-// Задача 8. Дано регулярное выражение в обратной польской записи, а также символ x и число k. Вывести длину кратчафшего слова
 // из языка L, содержащего префикс x^k.
 
 // Тесты:
@@ -299,11 +298,19 @@ namespace Testing {
 
         auto res_4 = RegExpMinWordWithGivenPrefixRead(s_test_4, x_4, k_4);
         // Expected 15
+        
+        std::string s_test_5 = "1c+abbbb...+abb..+*.bbb..aa.+*.";
+        char x_5 = 'b';
+        size_t k_5 = 5;
+
+        auto res_5 = RegExpMinWordWithGivenPrefixRead(s_test_5, x_5, k_5);
+        // Expected 6 
+
 
         assert(RegExpCorrectnessRead(s_test_1) && RegExpCorrectnessRead(s_test_2) && RegExpCorrectnessRead(s_test_3) &&
-               RegExpCorrectnessRead(s_test_4));
+               RegExpCorrectnessRead(s_test_4), RegExpCorrectnessRead(s_test_5));
 
-        assert(res_1 == UINT64_MAX && res_2 == 4 && res_3 == 2020 && res_4 == 15);
+        assert(res_1 == UINT64_MAX && res_2 == 4 && res_3 == 2020 && res_4 == 15 && res_5 == 6);
     }
 
     void DoTesting() {
