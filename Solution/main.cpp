@@ -1,4 +1,4 @@
-// Задача 8. По данному регулярному выражению в Польской записи над алфавитом {a,b,c,1,*,.,+}, 
+// Задача 10. По данному регулярному выражению в Польской записи над алфавитом {a,b,c,1,*,.,+},
 // символу x из множества {a, b, c} и неотрицательному целому k вывести минимальную длину слова
 // с суффиксом x^k в языке, задаваемым регулярным выражением.
 
@@ -21,6 +21,7 @@ using std::cout;
 using std::stack;
 using std::string;
 using std::vector;
+
 
 namespace RegExp {
     bool IsSymbol_abc(const char &element) {
@@ -50,7 +51,6 @@ namespace RegExp {
         new_current_node[0] = 0;
 
         for (size_t i = 1; i < current_node.size(); ++i) {
-            //new_current_node[i] = current_node[i];
             for (size_t j = 1; j < i; ++j) {
                 if (current_node[j] == j && new_current_node[i - j] != UINT64_MAX) {
                     new_current_node[i] = std::min(new_current_node[i], new_current_node[i - j] + j);
@@ -70,9 +70,8 @@ namespace RegExp {
 
     vector<size_t> UpdateNodeDot(const vector<size_t> &lhs_node, const vector<size_t> &rhs_node) {
         vector<size_t> new_current_node(lhs_node.size(), UINT64_MAX);
-        new_current_node[0] = lhs_node[0] + rhs_node[0] ;
 
-        for (size_t i = 1; i < rhs_node.size(); ++i) {
+        for (size_t i = 0; i < rhs_node.size(); ++i) {
             if (rhs_node[i] != UINT64_MAX) {
                 new_current_node[i] = lhs_node[0] + rhs_node[i];
             }
@@ -163,7 +162,7 @@ namespace RegExp {
             return symbols.top();
         }
 
-        size_t FindMinWord() const noexcept {
+        size_t FindMinWord() const {
             // assert(RegExpInRegView());
             stack<size_t> min_word_length;
 
@@ -193,7 +192,7 @@ namespace RegExp {
         }
 
         size_t FindMinWordWithGivenPrefix(char x, size_t k) const {
-            if (!k) {
+            if (!k || IsSymbol_1(x)) {
                 size_t min_word_length = FindMinWord();
                 return min_word_length;
             }
@@ -387,7 +386,7 @@ int main() {
         return 0;
     }
 
-    if (!RegExp::IsSymbol_abc(x)) {
+    if (!RegExp::IsSymbol_abc(x) && !RegExp::IsSymbol_1(x)) {
         cout << "ERROR" << "\n";
         return 0;
     }
